@@ -1,0 +1,119 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlinx-serialization'
+}
+
+// STATIC FIELD
+def APP_NAME_DEFAULT = "LamHX"
+def KEYSTORE_DEFAULT = "keystore.properties"
+
+// CUSTOM FIELD
+def APP_NAME = ""
+def KEYSTORE = ""
+
+// Handle APP_NAME
+if (!project.hasProperty("appname")) {
+    APP_NAME = APP_NAME_DEFAULT
+} else {
+    APP_NAME = project.property("appname")
+}
+if(!APP_NAME?.trim()) {
+    APP_NAME = APP_NAME_DEFAULT
+}
+println '==============================='
+println "AppName:  ${APP_NAME}"
+println '==============================='
+//
+// Handle KEYSTORE
+if (!project.hasProperty("keystore")) {
+    KEYSTORE = KEYSTORE_DEFAULT
+} else {
+    KEYSTORE = project.property("keystore")
+}
+
+def keystorePropertiesFile
+if(!KEYSTORE?.trim()) {
+    KEYSTORE = KEYSTORE_DEFAULT
+    keystorePropertiesFile = rootProject.file(KEYSTORE)
+} else {
+    keystorePropertiesFile = new File(KEYSTORE)
+}
+println "Keystore:  ${KEYSTORE}"
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+//
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.2"
+
+    defaultConfig {
+        applicationId "com.lamhx.amptaste"
+        minSdkVersion 16
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildFeatures {
+        viewBinding true
+    }
+
+    buildTypes {
+        debug {
+            resValue "string", "app_name", "${APP_NAME} Debug"
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            resValue "string", "app_name", APP_NAME
+        }
+
+        android.applicationVariants.all { variant ->
+            if (variant.buildType.name.equals("release")) {
+                variant.outputs.all { output ->
+                    def appName = APP_NAME
+                    def date = new Date()
+                    def formattedDate = date.format('dd_MM_yy_HH_mm')
+                    def outName = appName + "_release_${variant.versionName}_${formattedDate}.apk"
+                    outputFileName = outName
+                }
+            }
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    signingConfigs {
+        config {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+        }
+    }
+}
+
+dependencies {
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation 'androidx.core:core-ktx:1.2.0'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+    implementation("com.squareup.okhttp3:okhttp:4.9.0")
+}
