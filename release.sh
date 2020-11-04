@@ -1,7 +1,9 @@
 #bin/bash
+cd "$(dirname "$0")"
 
 appname=''
 keystore=''
+output_path='apk_release'
 
 usage()
 {
@@ -14,6 +16,15 @@ build ()
   ./gradlew clean -Pappname=$appname -Pkeystore=$keystore
   ./gradlew cleanBuildCache -Pappname=$appname -Pkeystore=$keystore
   ./gradlew assembleRelease -Pappname=$appname -Pkeystore=$keystore
+}
+
+storage ()
+{
+  if [[ ! -d $output_path ]]
+  then
+    mkdir $output_path
+  fi
+  cp app/build/outputs/apk/release/*.apk $output_path
 }
 
 while [ "$1" != "" ]; do
@@ -34,3 +45,4 @@ while [ "$1" != "" ]; do
 done
 
 build
+storage
