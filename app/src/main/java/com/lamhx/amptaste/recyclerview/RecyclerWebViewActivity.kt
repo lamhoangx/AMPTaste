@@ -6,6 +6,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.children
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
+import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.lamhx.amptaste.R
 
@@ -30,7 +31,7 @@ class RecyclerWebViewActivity : AppCompatActivity() {
         val linearLayoutManager = ZoomRecyclerLayout(this)
         linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
 
-        val snapHelper = SnapHelperOneByOne()
+        val snapHelper = PagerSnapHelper()
 
         recyclerView?.apply {
             setHasFixedSize(true)

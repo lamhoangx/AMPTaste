@@ -70,18 +70,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             resValue "string", "app_name", APP_NAME
         }
-
-        android.applicationVariants.all { variant ->
-            if (variant.buildType.name.equals("release")) {
-                variant.outputs.all { output ->
-                    def appName = APP_NAME
-                    def date = new Date()
-                    def formattedDate = date.format('dd_MM_yy_HH_mm')
-                    def outName = appName + "_release_${variant.versionName}_${formattedDate}.apk"
-                    outputFileName = outName
-                }
-            }
-        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
